@@ -3,8 +3,8 @@
 #include <unistd.h>
 
 #include "inventory.h"
-#include "venture.h"
 #include "textbox.h"
+#include "choice.h"
 
 typedef enum {
     WIZARD = 1,
@@ -19,19 +19,15 @@ typedef struct {
     Inventory inv;
 } Player;
 
-typedef struct {
-    int choice1;
-    int choice2;
-    int choice3;
-    int choice4;
-    int choice5;
-} Choice;
 
+int venture();
+int town();
+int town_talk();
 void textbox(const char *text);
 
 int main() {
     Player player;
-    Choice choice;
+    int player_choice;
 
     inventory_init(&player.inv);
 
@@ -81,20 +77,14 @@ int main() {
     //main loop 
     while (1) {
         textbox("WELL. YOU ARE A FREE MAN, WHAT WOULD YOU LIKE TO DO? 1.INFO 2.ROAM 3.INVENTORY");
-    
-        printf("I choose:... ");
-        if (scanf("%d", &choice.choice1) != 1) {
-            choice.choice1 = 0;
-            while (getchar() != '\n'); //clear invalid input
-        }
 
-        switch (choice.choice1) {
+    player_choice = get_choice(1, 3);
+    
+switch (player_choice) {
             case 1:
                 printf("YOU HAVE %d HEALTH AND %d MANA.\n", player.health, player.mana);
-                while (getchar() != '\n'); //clear input buffer
-                
                 printf("\n[Press Enter to continue]");
-                getchar(); //pause
+                getchar(); // pause
                 break;
 
             case 2:
@@ -106,12 +96,61 @@ int main() {
                 break;
                 
             default:
-                printf("INVALID CHOICE\n");
-                while (getchar() != '\n'); 
                 break;
         }
-        
     }
 
     return 0;
 } 
+
+int venture() {
+
+    printf("\nWHERE DO YOU WANT TO ROAM?\n");
+    printf("1. TOWN\n");
+    printf("2. WOODS\n");
+    printf("3. CASTLE\n");
+
+    int location_choice = get_choice(1, 3);
+
+    switch (location_choice) {
+        case 1:
+            textbox("OFF TO THE TOWN, SOMEONE LIKE YOU HAS NO USE FOR MONEY, THIS PLACE IS QUITE BORING.");
+            sleep(2);
+            town();
+            break;
+        case 2:
+            textbox("NOTHING BETTER TO DO, OFF TO THE WOODS.");
+            sleep(2);
+            break;
+        case 3:
+            textbox("\"I HATE THE DRAGON HERE\" YOU SAY, YOU MUST END HIM");
+            sleep(2);
+            break;
+        default:
+            break;
+    }
+return 0;
+}
+
+int town(){
+
+  textbox("THIS PLACE KIND OF SUCKS");
+  sleep(2);
+
+while (1) {
+        textbox("WHAT DO YOU WANT TO DO HERE? 1.TALK 2.LEAVE");
+        int activity_choice = get_choice(1, 2);
+
+        switch (activity_choice) {
+            case 1:
+                textbox("WHO DO YOU WANT TO TALK TO? 1.commoner 2.shopkeeper 3.town knight");
+                // town_talk();
+                break;
+
+            case 2:
+                textbox("You leave the town.");
+                sleep(1);
+                return 0;
+        }
+    }
+}
